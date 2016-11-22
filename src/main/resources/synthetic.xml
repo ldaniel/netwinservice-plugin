@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS
+FOR A PARTICULAR PURPOSE. THIS CODE AND INFORMATION ARE NOT SUPPORTED BY XEBIALABS.
+-->
+<synthetic xmlns="http://www.xebialabs.com/deployit/synthetic" 
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+           xsi:schemaLocation="http://www.xebialabs.com/deployit/synthetic synthetic.xsd">
+    <type type="windows.NetWindowsServices" 
+          deployable-type="windows.NetWindowsServicesSpec"
+          extends="powershell.ExtensiblePowerShellDeployedArtifact" 
+          container-type="windows.WindowsServiceClient"          
+          description=".NET Windows Services">
+               
+        <generate-deployable type="windows.NetWindowsServicesSpec" 
+                             description="EXE to be deployed as Windows Services program" 
+                             extends="powershell.BasePowerShellDeployableFileArtifact"/>
+        
+        <!-- hidden -->
+        <property name="createScript" default="netwinservices/deploy-script.ps1" hidden="true"/>
+        <property name="createOrder" kind="integer" default="54" hidden="true"/>
+        <property name="createVerb" default="Copy" hidden="true"/>
+        
+        <!-- public -->
+        <property name="ServiceName" description="Name of the service" required="true"/>
+        <property name="ServicePath" description="Path of the service binary on the server (e.g. c:\service\)" required="true"/>
+        <property name="BinaryName" description="Binary name to be installed as a Windows Service (e.g. ServiceName.exe)" required="true"/>
+    </type>
+    
+    <type type="windows.WindowsServiceClient" 
+          extends="powershell.BasePowerShellContainer" 
+          description="Windows Services client on the target server">
+      
+        <!-- public -->
+        <property name="InstallutilPath" description="Path of the Installutil.exe on the server (e.g. c:\service\)" required="true"/>        
+        <property name="Username" description="Username of the account this service should log on as" required="true"/>
+        <property name="Password" description="Password of the account this service should log on as" required="true" password="true" />
+    </type>
+</synthetic>
