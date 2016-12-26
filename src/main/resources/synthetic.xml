@@ -19,6 +19,7 @@ FOR A PARTICULAR PURPOSE. THIS CODE AND INFORMATION ARE NOT SUPPORTED BY XEBIALA
         
         <!-- hidden -->
         <property name="createScript" default="netwinservices/deploy-script.ps1" hidden="true"/>
+        <property name="destroyScript" default="netwinservices/destroy-script.ps1" hidden="true"/>
         <property name="createOrder" kind="integer" default="54" hidden="true"/>
         <property name="createVerb" default="Copy" hidden="true"/>
         
@@ -26,6 +27,7 @@ FOR A PARTICULAR PURPOSE. THIS CODE AND INFORMATION ARE NOT SUPPORTED BY XEBIALA
         <property name="ServiceName" description="Name of the service" required="true"/>
         <property name="ServicePath" description="Path of the service binary on the server (e.g. c:\service\)" required="true"/>
         <property name="BinaryName" description="Binary name to be installed as a Windows Service (e.g. ServiceName.exe)" required="true"/>
+        <property name="FullInstallation" description="TRUE for full installation using .NET installutil utility" default="false" kind="boolean" required="true"/>
     </type>
     
     <type type="windows.WindowsServiceClient" 
@@ -36,5 +38,8 @@ FOR A PARTICULAR PURPOSE. THIS CODE AND INFORMATION ARE NOT SUPPORTED BY XEBIALA
         <property name="InstallutilPath" description="Path of the Installutil.exe on the server (e.g. c:\service\)" required="true"/>        
         <property name="Username" description="Username of the account this service should log on as" required="true"/>
         <property name="Password" description="Password of the account this service should log on as" required="true" password="true" />
+		
+		<!-- hidden -->
+		<method name="checkcontainer" label="Check folders" description="Check folders creation on server" script="netwinservices/check-container.ps1"/>
     </type>
 </synthetic>

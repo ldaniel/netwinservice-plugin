@@ -1,6 +1,7 @@
 $_InstallutilEXE = $($deployed.container.InstallutilPath) + "Installutil.exe"
 $_ServicePath = $($deployed.ServicePath)
 $_BinaryName = $($deployed.BinaryName)
+$_FullInstallation = $($deployed.FullInstallation)
 $_BinaryToInstall = $_ServicePath + $_BinaryName
 $_ServiceName = $($deployed.ServiceName)
 $_ServiceLogonUser = $($deployed.container.Username)
@@ -12,17 +13,44 @@ function ExecuteDeployment()
 	Write-Host "Binary to install: $_BinaryToInstall"
 	Write-Host "Service name: $_ServiceName" 
 
-	# Call function to uninstall the Windows Service
-	UninstallWindowsService
+	$service = Get-WmiObject -Class Win32_Service -Filter "Name='$($_ServiceName)'"
 
-	# Call function to copy all deployables to target directory
-	CopyDeployables
+	if($_FullInstallation)
+	{
+		if($service)
+		{
+			# Call function to uninstall the Windows Service
+			UninstallWindowsService
+		}
 
-	# Call function to install the Windows Service
-	InstallWindowsService
+		# Call function to copy all deployables to target directory
+		CopyDeployables
 
-	# Call function to start the Windows Service
-	StartWindowsService
+		# Call function to install the Windows Service
+		InstallWindowsService
+
+		# Call function to start the Windows Service
+		StartWindowsService
+	}
+	else
+	{
+		if($service)
+		{
+			# Call function to stop the Windows Service
+			StopWindowsService
+
+			# Call function to copy all deployables to target directory
+			CopyDeployables
+
+			# Call function to start the Windows Service
+			StartWindowsService
+		}
+		else
+		{
+			PrintMessage "The windows service $($_ServiceName) is not installed on this server."
+			PrintMessage "A full installation is required. You have to mark the option 'Full Installation' with TRUE to make a full initial deployment."
+		}
+	}
 }
 
 function UninstallWindowsService
@@ -55,6 +83,12 @@ function InstallWindowsService
 {
 	PrintMessage "Installing the windows service $_ServiceName..."
 	&$_InstallutilEXE $_BinaryToInstall
+}
+
+function StopWindowsService
+{
+	PrintMessage "Stoping the windows service $_ServiceName..."
+	& net stop $_ServiceName
 }
 
 function StartWindowsService
